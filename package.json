@@ -1,0 +1,15 @@
+{
+  "name": "hyp-down",
+  "version": "1.0.0",
+  "description": "Extract notes from Hypothes.is",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Hakan Tunc",
+  "license": "MIT",
+  "dependencies": {
+    "ramda": "^0.23.0",
+    "request": "^2.81.0"
+  }
+}

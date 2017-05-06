@@ -1,5 +1,5 @@
 # hyp-down
-Extract notes from Hypothes.is
+Extract notes from [Hypothes.is](https://www.hypothes.is)
 
 ## How to use
 

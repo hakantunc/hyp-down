@@ -9,6 +9,7 @@
   "author": "Hakan Tunc",
   "license": "MIT",
   "dependencies": {
+    "caporal": "^0.5.0",
     "ramda": "^0.23.0",
     "request": "^2.81.0"
   }

@@ -15,7 +15,7 @@ var options = {
 };
 
 prog
-  .version('1.0.0')
+  .version('1.0.1')
   .description('Extract notes from Hypothes.is')
   .option('--days, -d <days>', 'Number of days to be fetched', prog.INT, 7)
   .action((args, options, logger) => {
@@ -24,22 +24,27 @@ prog
 
 var fetch = function (days) {
   var date = new Date();
-  date.setDate(date.getDate() - days);
+  var beg = new Date(date.getFullYear(), date.getMonth(), date.getDate() - days);
+  var end = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   request(options, function (error, response, body) {
-  var data = JSON.parse(body);
-  var notes
-    = R.compose(
-        R.reduce((a, b) => a + b, ''),
-        R.intersperse('\n\n'),
-        R.reverse,
-        R.filter(R.complement(R.isNil)),
-        R.flatten,
-        R.map(o => R.pluck('exact', o.target[0].selector)),
-        R.filter(e => new Date(e.updated) > date)
-      )(data.rows);
-  console.log('## Notes from the last', days, (days == 1 ? 'day\n' : 'days\n'));
-  console.log(notes);
+    var data = JSON.parse(body);
+    var notes
+      = R.compose(
+          R.reduce((a, b) => a + b, ''),
+          R.intersperse('\n\n'),
+          R.reverse,
+          R.filter(R.complement(R.isNil)),
+          R.flatten,
+          R.map(o => R.pluck('exact', o.target[0].selector)),
+          R.filter(e => dateInBetween(new Date(e.updated), beg, end))
+        )(data.rows);
+    console.log('## Notes from the last', days, (days == 1 ? 'day\n' : 'days\n'));
+    console.log(notes);
   });
 };
+
+function dateInBetween (date, beg, end) {
+  return date > beg && date < end;
+}
 
 prog.parse(process.argv);

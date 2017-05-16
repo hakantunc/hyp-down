@@ -1,6 +1,6 @@
 {
   "name": "hyp-down",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Extract notes from Hypothes.is",
   "main": "main.js",
   "scripts": {
@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "caporal": "^0.5.0",
+    "lodash": "^4.17.4",
     "ramda": "^0.23.0",
     "request": "^2.81.0"
   }

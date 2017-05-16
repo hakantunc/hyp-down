@@ -1,0 +1,9 @@
+## Notes from the last <%= days %> day<%= (days == 1) ? '' : 's' %>
+
+<% _.forEach(notes, function(nts, source) { %>
+### <%= source %>
+
+<% _.forEach(nts, function (note) { %>
+<%= note.content %>
+<% }); %>
+<% }); %>

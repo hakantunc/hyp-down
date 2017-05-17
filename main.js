@@ -18,7 +18,7 @@ var options = {
 };
 
 prog
-  .version('1.0.2')
+  .version('1.0.3')
   .description('Extract notes from Hypothes.is')
   .option('--days, -d <days>', 'Number of days to be fetched', prog.INT, 7)
   .action((args, options, logger) => {
@@ -37,6 +37,7 @@ var fetch = function (days) {
           R.groupBy(o => o.source),
           R.map(o => ({
             date: new Date(o.updated),
+            title: o.document.title,
             source: o.target[0].source,
             content: R.filter(R.complement(R.isNil), R.pluck('exact', o.target[0].selector))[0]
           })),

@@ -1,6 +1,6 @@
-<% if (title) {
-%>## Notes from the last <%= days %> day<%= (days == 1) ? '' : 's' %><%
-}%><% _.forEach(notes, function(nts, source) {
+<% if (title) { %># Notes from the last <%= days %> day<%= (days == 1) ? '' : 's' %>
+
+<% } %><% _.forEach(notes, function(nts, source) {
 %>## <%= nts[0].title %>
 ### <%= source %>
 <% _.forEach(nts, function (note) { %>

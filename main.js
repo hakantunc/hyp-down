@@ -3,6 +3,7 @@
 const _ = require('lodash');
 const config = require('./config.json');
 const fs = require('fs');
+const pjson = require('./package.json')
 const path = require('path');
 const prog = require('caporal');
 const request = require('request');
@@ -18,18 +19,22 @@ var options = {
 };
 
 prog
-  .version('1.0.3')
+  .version(pjson.version)
   .description('Extract notes from Hypothes.is')
   .option('--days, -d <days>', 'Number of days to be fetched', prog.INT, 7)
+  .option('--title, -t', 'Add title', prog.BOOL, false)
   .action((args, options, logger) => {
-    fetch(options.days);
+    fetch(options.days, options.title);
   });
 
-var fetch = function (days) {
+var fetch = function (days, title) {
   var date = new Date();
   var beg = new Date(date.getFullYear(), date.getMonth(), date.getDate() - days); // yes, this works
   var end = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   request(options, function (error, response, body) {
+    if (error) {
+      return console.log(error);
+    }
     var data = JSON.parse(body);
     var notes
       = R.compose(
@@ -44,7 +49,7 @@ var fetch = function (days) {
           R.filter(e => dateInBetween(new Date(e.updated), beg, end))
         )(data.rows);
     var file = fs.readFileSync(path.resolve(__dirname, 'output.template'));
-    var output = _.template(file)({days: days, notes: notes});
+    var output = _.template(file)({days: days, title: title, notes: notes});
     console.log(output);
   });
 };

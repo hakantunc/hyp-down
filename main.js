@@ -23,11 +23,12 @@ prog
   .description('Extract notes from Hypothes.is')
   .option('--days, -d <days>', 'Number of days to be fetched', prog.INT, 7)
   .option('--title, -t', 'Add title', prog.BOOL, false)
+  .option('--debug', 'Debug', prog.BOOL, false)
   .action((args, options, logger) => {
-    fetch(options.days, options.title);
+    fetch(options.days, options.title, options.debug);
   });
 
-var fetch = function (days, title) {
+var fetch = function (days, title, debug) {
   var date = new Date();
   var beg = new Date(date.getFullYear(), date.getMonth(), date.getDate() - days); // yes, this works
   var end = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -44,13 +45,17 @@ var fetch = function (days, title) {
             date: new Date(o.updated),
             title: o.document.title,
             source: o.target[0].source,
-            content: R.filter(R.complement(R.isNil), R.pluck('exact', o.target[0].selector))[0]
+            content: R.filter(R.complement(R.isNil), R.pluck('exact', o.target[0].selector))[0],
+            text: o.text
           })),
           R.filter(e => dateInBetween(new Date(e.updated), beg, end))
         )(data.rows);
     var file = fs.readFileSync(path.resolve(__dirname, 'output.template'));
     var output = _.template(file)({days: days, title: title, notes: notes});
     console.log(output);
+    if (debug) {
+      console.log(JSON.stringify(data.rows[0], null, '  '));
+    }
   });
 };
 

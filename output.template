@@ -3,7 +3,10 @@
 <% } %><% _.forEach(notes, function(nts, source) {
 %>## <%= nts[0].title %>
 ### <%= source %>
-<% _.forEach(nts, function (note) { %>
-<%= note.content %>
+<% _.forEach(nts, function (note) {
+%><% if (note.text) { %>
+<%= note.text %><% } %>
+<%= note.text ? '> ' : '' %><%= note.content %>
+<%= note.text ? '---' : '' %>
 <% }); %>
 <% }); %>

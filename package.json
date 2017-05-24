@@ -1,6 +1,6 @@
 {
   "name": "hyp-down",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Extract notes from Hypothes.is",
   "main": "main.js",
   "scripts": {

@@ -6,7 +6,7 @@
 <% _.forEach(nts, function (note) {
 %><% if (note.text) { %>
 <%= note.text %><% } %>
-<%= note.text ? '> ' : '' %><%= note.content %>
-<%= note.text ? '---' : '' %>
+<%= note.text ? '> ' : '' %><%= note.content
+%><%= note.text ? '\n---' : '' %>
 <% }); %>
 <% }); %>

@@ -48,6 +48,7 @@ var fetch = function (days, title, debug) {
             content: R.filter(R.complement(R.isNil), R.pluck('exact', o.target[0].selector))[0],
             text: o.text
           })),
+          R.reverse(),
           R.filter(e => dateInBetween(new Date(e.updated), beg, end))
         )(data.rows);
     var file = fs.readFileSync(path.resolve(__dirname, 'output.template'));

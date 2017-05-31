@@ -1,4 +1,8 @@
 {
-  "API_TOKEN": "<https://hypothes.is/account/developer>",
-  "USER": "<your username>"
+  "API_TOKEN":           "<https://hypothes.is/account/developer>",
+  "USER":                "<your hypothes.is username>",
+  "IMGUR_CLIENT_ID":     "",
+  "IMGUR_SECRET":        "",
+  "IMGUR_ACCESS_TOKEN":  "",
+  "IMGUR_REFRESH_TOKEN": ""
 }

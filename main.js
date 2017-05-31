@@ -22,13 +22,21 @@ prog
   .version(pjson.version)
   .description('Extract notes from Hypothes.is')
   .option('--days, -d <days>', 'Number of days to be fetched', prog.INT, 7)
+  .option('--imgur, -i', 'Add images from imgur', prog.BOOL, false)
   .option('--title, -t', 'Add title', prog.BOOL, false)
   .option('--debug', 'Debug', prog.BOOL, false)
   .action((args, options, logger) => {
-    fetch(options.days, options.title, options.debug);
+    if (R.isNil(config.IMGUR_CLIENT_ID)) {
+      return logger.info('Set your IMGUR_CLIENT_ID in config.json');
+    }
+    if (R.isNil(config.IMGUR_ACCESS_TOKEN)) {
+      logger.info('Visit the link below and set the imgur tokens in the config file');
+      return logger.info(`https://api.imgur.com/oauth2/authorize?client_id=${config.IMGUR_CLIENT_ID}&response_type=token`);
+    }
+    fetch(options.days, options.imgur, options.title, options.debug);
   });
 
-var fetch = function (days, title, debug) {
+var fetch = function (days, imgur, title, debug) {
   var date = new Date();
   var beg = new Date(date.getFullYear(), date.getMonth(), date.getDate() - days); // yes, this works
   var end = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -54,6 +62,23 @@ var fetch = function (days, title, debug) {
     var file = fs.readFileSync(path.resolve(__dirname, 'output.template'));
     var output = _.template(file)({days: days, title: title, notes: notes});
     console.log(output);
+    if (imgur) {
+      var imgurOptions = {
+        url: 'https://api.imgur.com/3/account/me/images',
+        auth: {bearer: config.IMGUR_ACCESS_TOKEN},
+      };
+      request(imgurOptions, function (error, response, body) {
+        var data = JSON.parse(body);
+        var images
+          = R.compose(
+              R.join('\n'),
+              R.reverse(),
+              R.map(o => `![](${o.link})`),
+              R.filter(e => dateInBetween(new Date(e.datetime*1000), beg, end))
+            )(data.data);
+        console.log(images);
+      });
+    }
     if (debug) {
       console.log(JSON.stringify(data.rows[0], null, '  '));
     }

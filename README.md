@@ -1,5 +1,5 @@
 # hyp-down
-Extract notes from [Hypothes.is](https://www.hypothes.is)
+Extract notes from [Hypothes.is](https://www.hypothes.is) & embed images from [Imgur](https://imgur.com/) in markdown format
 
 ## How to use
 

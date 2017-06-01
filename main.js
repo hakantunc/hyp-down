@@ -63,20 +63,28 @@ var fetch = function (days, imgur, title, debug) {
     var output = _.template(file)({days: days, title: title, notes: notes});
     console.log(output);
     if (imgur) {
-      var imgurOptions = {
-        url: 'https://api.imgur.com/3/account/me/images',
-        auth: {bearer: config.IMGUR_ACCESS_TOKEN},
-      };
-      request(imgurOptions, function (error, response, body) {
-        var data = JSON.parse(body);
-        var images
-          = R.compose(
-              R.join('\n'),
-              R.reverse(),
-              R.map(o => `![](${o.link})`),
-              R.filter(e => dateInBetween(new Date(e.datetime*1000), beg, end))
-            )(data.data);
-        console.log(images);
+      refreshImgurToken(function () {
+        var imgurOptions = {
+          url: 'https://api.imgur.com/3/account/me/images',
+          auth: {bearer: config.IMGUR_ACCESS_TOKEN},
+        };
+        request(imgurOptions, function (error, response, body) {
+          var data = JSON.parse(body);
+          if (error) {
+            return console.log('imgur', error);
+          }
+          if (data.status != 200) {
+            console.log(`status:${data.status}`, data);
+          }
+          var images
+            = R.compose(
+                R.join('\n'),
+                R.reverse(),
+                R.map(o => `![](${o.link})`),
+                R.filter(e => dateInBetween(new Date(e.datetime*1000), beg, end))
+              )(data.data);
+          console.log(images);
+        });
       });
     }
     if (debug) {
@@ -84,6 +92,29 @@ var fetch = function (days, imgur, title, debug) {
     }
   });
 };
+
+function refreshImgurToken (next) {
+  var options = {
+    url: 'https://api.imgur.com/oauth2/token',
+    qs: {
+      refresh_token: config.IMGUR_REFRESH_TOKEN,
+      client_id: config.IMGUR_CLIENT_ID,
+      client_secret: config.IMGUR_SECRET,
+      grant_type: 'refresh_token'
+    }
+  };
+  request.post(options.url, {form: options.qs}, function (error, response, body) {
+    if (error) {
+      console.log(error);
+      return next(error);
+    }
+    var data = JSON.parse(body);
+    config.IMGUR_ACCESS_TOKEN = data.access_token;
+    config.IMGUR_REFRESH_TOKEN = data.refresh_token;
+    fs.writeFileSync('./config.json', JSON.stringify(config, null, '  '));
+    next();
+  });
+}
 
 function dateInBetween (date, beg, end) {
   return date > beg && date < end;
